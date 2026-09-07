@@ -1,0 +1,70 @@
+Day-1 
+testcase1 :
+public class Day1_testcase1 {
+
+	public static void main(String[] args) throws InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		WebDriver driver = new EdgeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.navigate().to("https://www.saucedemo.com/");
+		Thread.sleep(3000);
+		
+		//login to application
+		driver.findElement(By.id("user-name")).sendKeys("standard_user");
+		driver.findElement(By.id("password")).sendKeys("secret_sauce");
+		driver.findElement(By.name("login-button")).click();
+		Thread.sleep(3000);
+		
+		//scrolling
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollTo(0,500)");
+		Thread.sleep(3000);
+		
+		//taking screenshot
+		TakesScreenshot t = (TakesScreenshot) driver;
+		File src = t.getScreenshotAs(OutputType.FILE);
+		File dest = new File("./Screenshot/testcase1.png");
+		FileHandler.copy(src, dest);
+		
+		driver.quit();
+	}
+
+}
+
+
+
+
+testcase2 :
+public class Day1_testcase2 {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		WebDriver driver = new EdgeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.navigate().to("https://www.myntra.com/");
+		Thread.sleep(3000);
+		
+		driver.findElement(By.className("desktop-searchBar")).sendKeys("Sarees", Keys.ENTER);
+		
+		//WebElement ele = driver.findElement(By.xpath("//a[text()='Woven Design Pure Cotton Saree']"));
+		WebElement wishlist = driver.findElement(By.xpath("(//span[@class='product-wishlistFlex product-actionsButton product-wishlist '])[3]"));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click()",wishlist);
+		
+		String url = driver.getCurrentUrl();
+		System.out.println(url);
+		if (url.equals("https://www.myntra.com/login?referer=https://www.myntra.com/sarees?rawQuery=Sarees"))
+		{
+			System.out.println("Product is added to wishlist");
+		}
+		else
+		{
+			System.out.println("Product is not added to wishlist");
+		}
+		
+		driver.quit();
+	}
+
+}
