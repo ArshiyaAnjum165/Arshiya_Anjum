@@ -1,0 +1,122 @@
+testcase1
+public class Day2_testcase1 {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		WebDriver driver = new EdgeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.navigate().to("https://www.facebook.com/");
+		
+		driver.findElement(By.xpath("//span[text()='Create new account']")).click();
+		WebElement first_name = driver.findElement(By.id("_R_1cl2p4jikacppb6amH1_"));
+		WebElement last_name = driver.findElement(By.id("_R_1kl2p4jikacppb6amH1_"));
+		
+		if (first_name.getLocation().getY() == last_name.getLocation().getY())
+		{
+			System.out.println("Elements are aligned in a same line");
+		}
+		else
+		{
+			System.out.println("Elements are not aligned in a same line");
+		}
+		driver.quit();
+
+	}
+
+}
+
+
+testcase2
+
+public class Day2_testcase2 {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		WebDriver driver = new EdgeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.navigate().to("https://www.facebook.com/");
+		Thread.sleep(2000);
+		
+		WebElement ele = driver.findElement(By.xpath("//span[text()='Create new account']"));
+		System.out.println(ele.getLocation());
+		
+		//getDomAttribute & getDonProperty
+		
+		WebElement email = driver.findElement(By.name("email"));
+		System.out.println(email.getDomAttribute("name"));
+		System.out.println(email.getDomProperty("value"));
+		
+		email.sendKeys("anjumarshiya016@gmail.com");
+		Thread.sleep(3000);
+		System.out.println(email.getDomAttribute("name"));
+		System.out.println(email.getDomProperty("value"));
+		
+		ele.click();
+		WebElement button = driver.findElement(By.xpath("//span[text()='Submit']"));
+		
+		System.out.println(button.getSize());
+		System.out.println(button.getCssValue("font-weight"));
+		System.out.println(button.getCssValue("color"));
+		System.out.println(button.getCssValue("text-align"));
+		
+		driver.quit();
+		
+
+	}
+
+}
+
+
+testcase3
+
+public class Day2_testcase3 {
+
+	public static void main(String[] args) throws InterruptedException, IOException {
+		// TODO Auto-generated method stub
+		WebDriver driver = new EdgeDriver();
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.navigate().to("https://demowebshop.tricentis.com/");
+		Thread.sleep(2000);
+		
+		driver.findElement(By.linkText("14.1-inch Laptop"));
+		driver.findElement(By.xpath("(//input[@value='Add to cart'])[2]")).click();
+		
+		driver.findElement(By.linkText("Shopping cart")).click();
+		
+    	WebElement ele = driver.findElement(By.name("removefromcart"));
+    	System.out.println(ele.isSelected());
+    	
+    	//information using getRect method
+		
+		System.out.println(ele.getRect());
+		System.out.println(ele.getRect().getX());
+		System.out.println(ele.getLocation().getY());
+		System.out.println(ele.getSize().getHeight());
+		System.out.println(ele.getSize().getWidth());
+		
+		//verifying alert message
+		System.out.println("Before applying coupon");
+		List<WebElement> alert = driver.findElements(By.xpath("//div[@class='message']"));
+		if(alert.size()>0) {
+			System.out.println("Alert is displayed");
+		}
+		else{
+			System.out.println("Alert is not displayed");
+		}
+		System.out.println("After coupon applying");
+        driver.findElement(By.xpath("//input[@name='applydiscountcouponcode']")).click();
+        WebElement alert1 = driver.findElement(By.xpath("//div[@class='message']"));
+        System.out.println(alert1.isDisplayed());
+
+		//capturing screenshot
+		WebElement ss = driver.findElement(By.xpath("//img[@src='https://demowebshop.tricentis.com/content/images/thumbs/0000224_141-inch-laptop_80.png']"));
+		File src = ss.getScreenshotAs(OutputType.FILE);
+		File dest = new File("./Screenshot/laptop.png");
+		FileHandler.copy(src, dest);
+	
+		driver.quit();
+	}
+}
