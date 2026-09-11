@@ -1,0 +1,110 @@
+testcase1
+
+public class Day5_testcase1 {
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		FileInputStream f = new FileInputStream("./src/test/resources/DDT/testcase1.properties");
+		Properties p = new Properties();
+		p.load(f);
+		
+		//reading data from the file
+		String browser = p.getProperty("browser");
+		String url = p.getProperty("url");
+		String email = p.getProperty("email");
+		String pw = p.getProperty("password");
+		System.out.println(browser);
+		System.out.println(url);
+		System.out.println(email);
+		System.out.println(pw);
+		
+		WebDriver driver = null;
+		if (browser.equals("chrome"))
+		{
+			driver = new ChromeDriver();
+		}
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.get(url);
+		driver.findElement(By.linkText("Log in")).click();
+		driver.findElement(By.id("Email")).sendKeys(email);
+		driver.findElement(By.id("Password")).sendKeys(pw);
+		driver.findElement(By.xpath("//input[@class='button-1 login-button']")).click();
+
+	}
+
+}
+
+
+testcase2
+
+public class Day5_testcase2 {
+
+	public static void main(String[] args) throws EncryptedDocumentException, IOException {
+		// TODO Auto-generated method stub
+		FileInputStream f = new FileInputStream("./src/test/resources/DDT/testcase2.xlsx");
+		Workbook w = WorkbookFactory.create(f);
+		String browser = w.getSheet("Sheet1").getRow(1).getCell(0).getStringCellValue();
+		System.out.println(browser);
+		String url = w.getSheet("Sheet1").getRow(1).getCell(1).getStringCellValue();
+		System.out.println(url);
+		String un = w.getSheet("Sheet1").getRow(1).getCell(2).getStringCellValue();
+		System.out.println(un);
+		String pw = w.getSheet("Sheet1").getRow(1).getCell(3).getStringCellValue();
+		System.out.println(pw);
+		
+		WebDriver driver = null;
+		if (browser.equals("chrome"))
+		{
+			driver = new ChromeDriver();
+		}
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.get(url);
+		driver.findElement(By.name("username")).sendKeys(un);
+		driver.findElement(By.name("password")).sendKeys(pw);
+		driver.findElement(By.xpath("//button[text()=' Login ']")).click();
+
+	}
+
+}
+
+
+
+testcase3
+
+public class Day5_testcase3 {
+
+	public static void main(String[] args) throws IOException, ParseException {
+		// TODO Auto-generated method stub
+		FileReader f = new FileReader("./src/test/resources/DDT/testcase3.json");
+		JSONParser j = new JSONParser();
+		Object obj = j.parse(f);
+		JSONObject json = (JSONObject)obj;
+		String browser = json.get("browser").toString();
+		System.out.println(browser);
+		String url = json.get("url").toString();
+		System.out.println(url);
+		String name = json.get("name").toString();
+		System.out.println(name);
+		String email = json.get("email").toString();
+		System.out.println(email);
+		String pw = json.get("password").toString();
+		System.out.println(pw);
+		
+		WebDriver driver = null;
+		if (browser.equals("chrome"))
+		{
+			driver = new ChromeDriver();
+		}
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+		driver.get(url);
+		driver.findElement(By.id("name")).sendKeys(name);
+		driver.findElement(By.id("email")).sendKeys(email);
+		driver.findElement(By.id("password")).sendKeys(pw);
+		driver.findElement(By.xpath("//button[text()='Register']")).click();
+
+	}
+
+}
