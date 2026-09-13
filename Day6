@@ -80,11 +80,13 @@ public class Day6_testcase1 {
 		
 		//verifying wether the emp is present in records or not
 		boolean userPresent = driver.findElements(By.xpath("//div[@role='row'][.//div[@role='cell' and normalize-space()='" + user_name + "']]")).size() > 0;
-			if (userPresent) {
-			    System.out.println("PASS: User is present");
-			} else {
-			    System.out.println("FAIL: User is not present");
-			}
+		if (userPresent) {
+			System.out.println("PASS: User is present");
+		} else {
+			System.out.println("FAIL: User is not present");
+		}
+        driver.findElement(By.xpath("//p[contains(@class,'oxd-userdropdown-name')]/ancestor::li[contains(@class,'oxd-userdropdown')]/descendant::span[contains(@class,'oxd-userdropdown-tab')]")).click();
+        driver.findElement(By.xpath("//a[text()='Logout']")).click();
 		
 		driver.quit();
 	}
