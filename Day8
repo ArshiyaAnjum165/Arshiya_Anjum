@@ -1,0 +1,187 @@
+public class Day8_testcase1 {
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+				// PROPERTY FILE 
+
+				FileInputStream f = new FileInputStream("./src/test/resources/DDT/Day8_testcase.properties");
+
+				Properties p = new Properties();
+				p.load(f);
+
+				String brow = p.getProperty("browser");
+				String url = p.getProperty("url");
+				String un = p.getProperty("username");
+				String pw = p.getProperty("password");
+
+
+				//EXCEL FILE 
+
+				FileInputStream excel = new FileInputStream("./src/test/resources/DDT/TestData.xlsx");
+
+				Workbook wb = WorkbookFactory.create(excel);
+
+				Sheet sh = wb.getSheet("Recruitment");
+
+				Row row = sh.getRow(1);
+
+				String firstName = row.getCell(0).getStringCellValue();
+				String middleName = row.getCell(1).getStringCellValue();
+				String lastName = row.getCell(2).getStringCellValue();
+				String vacancyData = row.getCell(3).getStringCellValue();
+				String email = row.getCell(4).getStringCellValue();
+
+				String mobile = String.valueOf((long) row.getCell(5).getNumericCellValue());
+				String resumePath = row.getCell(6).getStringCellValue();
+				String applicationDate = row.getCell(7).getStringCellValue();
+
+				String jobTitleData = row.getCell(8).getStringCellValue();
+				String hiringManagerData = row.getCell(9).getStringCellValue();
+				String statusData = row.getCell(10).getStringCellValue();
+
+
+				// BROWSER 
+
+				WebDriver driver = null;
+
+				if (brow.equals("chrome")) {
+					driver = new ChromeDriver();
+				}
+
+				driver.manage().window().maximize();
+
+				driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+
+				driver.get(url);
+
+
+				//  POM OBJECT 
+
+				Day8_testcase r = new Day8_testcase(driver);
+
+
+				// LOGIN 
+
+				r.getUsername(un);
+				r.getPassword(pw);
+				r.getLogin();
+
+
+				// RECRUITMENT
+
+				r.getRecruitment();
+
+				r.getAddCandidate();
+
+
+				// ADD CANDIDATE 
+
+				r.getFirstName(firstName);
+				r.getMiddleName(middleName);
+				r.getLastName(lastName);
+
+
+				// SELECT VACANCY 
+
+				r.getVacancy();
+
+				driver.findElement(By.xpath("//div[@role='option']//span[normalize-space()='"+ vacancyData + "']")).click();
+
+				// EMAIL
+
+				r.getEmail(email);
+
+
+				//MOBILE
+
+				r.getMobileNumber(mobile);
+
+
+				//  UPLOAD RESUME 
+
+				r.getResume(resumePath);
+
+
+				//  APPLICATION DATE
+
+				r.getApplicationDate(applicationDate);
+
+
+				// SAVE 
+
+				r.getSave();
+
+
+				// CANDIDATES 
+
+				r.getCandidates();
+
+
+				// JOB TITLE 
+
+				r.getJobTitle();
+
+				driver.findElement(By.xpath("//div[@role='option']//span[normalize-space()='"+ jobTitleData + "']")).click();
+
+			
+				//  JOB VACANCY
+
+				r.getJobVacancy();
+
+			  driver.findElement(By.xpath("//div[@role='option']//span[normalize-space()='"+ vacancyData + "']")).click();
+
+
+				// HIRING MANAGER 
+
+				r.getHiringManager();
+
+				driver.findElement(By.xpath("(//div[@role='option'])[2]")).click();
+
+
+				// STATUS
+
+				r.getStatus();
+
+			   driver.findElement(By.xpath("//div[@role='option']//span[normalize-space()='"+ statusData + "']")).click();
+
+
+				//CANDIDATE NAME
+
+				r.getCandidateName(firstName);
+
+
+				// APPLICATION DATE 
+
+				r.getDateFrom(applicationDate);
+				r.getDateTo(applicationDate);
+
+
+				// SEARCH
+
+				r.getSearch();
+
+
+				// VERIFY RECORD
+
+
+				int count = driver.findElements(By.xpath("//div[contains(@class,'oxd-table-body')]//div[contains(@class,'oxd-table-row')]")).size();
+
+				if (count > 0) {
+					System.out.println("Candidate is added successfully");
+				} else {
+					System.out.println("Candidate is NOT added");
+				}
+
+
+				// LOGOUT 
+
+				r.getUserDropdown();
+				r.getLogout();
+
+
+				//CLOSE 
+
+				driver.quit();
+			}
+
+}
