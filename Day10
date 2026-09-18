@@ -209,83 +209,66 @@ password secret_sauce
 firstname	lastname	postalcode
 Arshiya	   Anjum	   583101
 
+//Base Class
+
+public class Day10_Base {
+	protected WebDriver driver;
+	protected Properties p;
+	protected LoginPage lp;
+	protected ProductsPage pp;
+	protected CartPage cp;
+	protected CheckoutPage chp;
+	protected CheckoutOverviewPage cop;
+	protected String firstName;
+	protected String lastName;
+	protected String postalCode;
+	 @BeforeClass
+	    public void setup() throws IOException {
+
+	        // PROPERTY FILE
+	        FileInputStream f =new FileInputStream("./src/test/resources/DDT/CommonData.properties");
+	        p = new Properties();
+	        p.load(f);
+	        String browser =p.getProperty("browser");
+	        String url =p.getProperty("url");
+	        
+	        // BROWSER
+	        if (browser.equalsIgnoreCase("chrome")) {
+	        	ChromeOptions settings = new ChromeOptions();
+	            Map<String, Object> prefs = new HashMap<>();
+	            prefs.put("profile.password_manager_leak_detection", false);
+	            settings.setExperimentalOption("prefs", prefs);
+	            driver = new ChromeDriver(settings);
+	        }
+	        driver.manage().window().maximize();
+	        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+	        driver.get(url);
+
+	        // POM OBJECT CREATION
+	        lp = new LoginPage(driver);
+	        pp = new ProductsPage(driver);
+	        cp = new CartPage(driver);
+	        chp = new CheckoutPage(driver);
+	        cop = new CheckoutOverviewPage(driver);
+
+	        // EXCEL FILE
+	        FileInputStream excel =new FileInputStream("./src/test/resources/DDT/Day10_testcase.xlsx");
+	        Workbook wb =WorkbookFactory.create(excel);
+	        firstName = wb.getSheet("Sheet1").getRow(1).getCell(0).toString();
+	        lastName = wb.getSheet("Sheet1").getRow(1).getCell(1).toString();
+	        postalCode = wb.getSheet("Sheet1").getRow(1).getCell(2).toString();
+
+	    }
+	 @AfterClass
+	    public void closeBrowser() {
+	        driver.quit();
+	    }
+}
+
 //testScript
 
-package Assessment;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.Properties;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import Assesmentt.CartPage;
-import Assesmentt.CheckoutOverviewPage;
-import Assesmentt.CheckoutPage;
-import Assesmentt.LoginPage;
-import Assesmentt.ProductsPage;
-
-public class Day10_testcase1 {
-
-    WebDriver driver;
-    Properties p;
-    LoginPage lp;
-    ProductsPage pp;
-    CartPage cp;
-    CheckoutPage chp;
-    CheckoutOverviewPage cop;
-    String firstName;
-    String lastName;
-    String postalCode;
-    
-    @BeforeClass
-    public void setup() throws IOException {
-
-        // PROPERTY FILE
-        FileInputStream f =new FileInputStream("./src/test/resources/DDT/CommonData.properties");
-        p = new Properties();
-        p.load(f);
-        String browser =p.getProperty("browser");
-        String url =p.getProperty("url");
-        
-        // BROWSER
-        if (browser.equalsIgnoreCase("chrome")) {
-           ChromeOptions settings = new ChromeOptions();
-   		   Map<String, Object> prefs = new HashMap<>();
-    	   prefs.put("profile.password_manager_leak_detection", false);
-   	       settings.setExperimentalOption("prefs", prefs);
-   	       driver = new ChromeDriver(settings);
-        }
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.get(url);
-
-        // POM OBJECT CREATION
-        lp = new LoginPage(driver);
-        pp = new ProductsPage(driver);
-        cp = new CartPage(driver);
-        chp = new CheckoutPage(driver);
-        cop = new CheckoutOverviewPage(driver);
-
-        // EXCEL FILE
-        FileInputStream excel =new FileInputStream("./src/test/resources/DDT/Day10_testcase.xlsx");
-        Workbook wb =WorkbookFactory.create(excel);
-        firstName =wb.getSheet("Sheet1").getRow(1).getCell(0).toString();
-        lastName =wb.getSheet("Sheet1").getRow(1).getCell(1).toString();
-        postalCode =wb.getSheet("Sheet1").getRow(1).getCell(2).toString();
-
-    }
-
-
+public class Day10_testcase1 extends Day10_Base {
+  
     // TEST METHOD 1
 
     @Test(priority = 1)
@@ -306,16 +289,13 @@ public class Day10_testcase1 {
         } else {
             System.out.println("Products page is NOT displayed");
         }
-        Thread.sleep(2000);
     }
-
 
     // TEST METHOD 2
 
     @Test(priority = 2, dependsOnMethods = "loginTest")
     public void orderPlacementTest() throws InterruptedException {
         // Add Sauce Labs Backpack
-
         pp.addBackpack();
         // Verify Cart Contains 1 Item
         if (pp.getCartCount().equals("1")) {
@@ -350,9 +330,8 @@ public class Day10_testcase1 {
 
         // Click Continue
         chp.clickContinue();
-
+        Thread.sleep(2000);
         // Verify Checkout Overview Page
-
         if (cop.verifyCheckoutOverview()) {
             System.out.println("Checkout: Overview page is displayed");
         } else {
@@ -369,10 +348,4 @@ public class Day10_testcase1 {
             System.out.println("Order was not successful");
         }
     }
-
-    @AfterClass
-    public void closeBrowser() {
-        driver.quit();
-    }
 }
-
