@@ -259,7 +259,11 @@ public class Day10_testcase1 {
         
         // BROWSER
         if (browser.equalsIgnoreCase("chrome")) {
-            driver = new ChromeDriver();
+           ChromeOptions settings = new ChromeOptions();
+   		   Map<String, Object> prefs = new HashMap<>();
+    	   prefs.put("profile.password_manager_leak_detection", false);
+   	       settings.setExperimentalOption("prefs", prefs);
+   	       driver = new ChromeDriver(settings);
         }
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
