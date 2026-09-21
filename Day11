@@ -4,43 +4,55 @@
 package Assesmentt;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class Day11_Loginpage {
 
-	    WebDriver driver;
+public class Day11_loginpage1 {
+		WebDriver driver;
 
-	    @FindBy(name = "username")
-	    private WebElement username;
+		@FindBy(name = "username")
+		private WebElement username;
 
-	    @FindBy(name = "password")
-	    private WebElement password;
+		@FindBy(name = "password")
+		private WebElement password;
 
-	    @FindBy(xpath = "//button[@type='submit']")
-	    private WebElement login;
+		@FindBy(xpath = "//button[@type='submit']")
+		private WebElement login;
 
-	    public Day11_Loginpage(WebDriver driver) {
-	        this.driver = driver;
-	        PageFactory.initElements(driver,this);
-	    }
+		@FindBy(xpath = "//span[contains(@class,'oxd-userdropdown-tab')]")
+		private WebElement userDropdown;
 
-	    public void enterUsername(String un) {
-	        username.sendKeys(un);
-	    }
+		@FindBy(xpath = "//a[text()='Logout']")
+		private WebElement logout;
 
-	    public void enterPassword(String pwd) {
+		public Day11_loginpage1(WebDriver driver) {
+			this.driver = driver;
+			PageFactory.initElements(driver, this);
+		}
 
-	        password.sendKeys(pwd);
-	    }
+		public void enterUsername(String un) {
+			username.sendKeys(un);
+		}
 
-	    public void clickLogin() {
+		public void enterPassword(String pwd) {
+			password.sendKeys(pwd);
+		}
 
-	        login.click();
-	    }
+		public void clickLogin() {
+			login.click();
+		}
+
+		public void clickUserDropdown() {
+			userDropdown.click();
+		}
+
+		public void clickLogout() {
+			logout.click();
+		}
 
 }
+
 
 //POM Recuitement file
 package Assesmentt;
@@ -176,85 +188,88 @@ vacancyName	jobTitle	        description	                                      h
 AI Engineer	Software Engineer	Responsible for developing AI and ML applications	Linda Anderson	3
 
 //Base file
-package Assesmentt;
+protected WebDriver driver;
+	String browser;
+	String url;
+	String username;
+	String password;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+	@BeforeSuite
+	public void BS() {
+		System.out.println("Open database connectivity");
+	}
 
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+	@AfterSuite
+	public void AS() {
+		System.out.println("Close database connectivity");
+	}
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+	@BeforeTest
+	public void BT() {
+		System.out.println("pre condition");
+	}
 
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+	@AfterTest
+	public void AT() {
+		System.out.println("post condition");
+	}
 
-public class Day11_Base {
+	@BeforeClass
+	public void setup() throws IOException {
+		// PROPERTY FILE
+		FileInputStream f =new FileInputStream("./src/test/resources/DDT/Day6_testcase1.properties");
+		Properties p = new Properties();
+		p.load(f);
+		browser = p.getProperty("browser");
+		url = p.getProperty("url");
+		 username = p.getProperty("username");
+		 password = p.getProperty("password");
+		ChromeOptions settings = new ChromeOptions();
+		Map<String, Object> prefs = new HashMap<>();
+		prefs.put("profile.password_manager_leak_detection", false);
+		settings.setExperimentalOption("prefs", prefs);
+		
+		if (browser.equalsIgnoreCase("chrome"))
+		{
+			driver = new ChromeDriver(settings);
+		}
+		if (browser.equalsIgnoreCase("edge"))
+		{
+			driver = new EdgeDriver();
+		}
+		if (browser.equalsIgnoreCase("firefox"))
+		{
+			driver = new FirefoxDriver();
+		}
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+	}
 
-	    protected WebDriver driver;
-	    protected Properties p;
-	    protected Day11_Loginpage lp;
-	    protected Day11_Recuitementpage rp;
-	    protected Day11_Vancancypage vp;
-	    protected String vacancyName;
-	    protected String jobTitle;
-	    protected String description;
-	    protected String hiringManager;
-	    protected String numberOfPositions;
+	@AfterClass
+	public void closeBrowser() {
+		driver.quit();
+	}
 
-	    @BeforeClass
-	    public void setup() throws IOException {
-	        // PROPERTY FILE
-	        FileInputStream f =new FileInputStream("./src/test/resources/DDT/Day6_testcase1.properties");
-	        p = new Properties();
-	        p.load(f);
-	        String browser =p.getProperty("browser");
-	        String url =p.getProperty("url");
+	@BeforeMethod
+	public void BM() throws IOException {
+		// PROPERTY FILE			
+				driver.get(url);
+				// LOGIN
+				Day11_loginpage1 lp = new Day11_loginpage1(driver);
+				lp.enterUsername(username);
+				lp.enterPassword(password);
+				lp.clickLogin();
+		        System.out.println("Login executed");
+	}
 
-	        // BROWSER
-	        if (browser.equalsIgnoreCase("chrome")) {
-	            // Avoid Change Password popup
-	            ChromeOptions settings =new ChromeOptions();
-	            Map<String, Object> prefs =new HashMap<>();
-	            prefs.put("profile.password_manager_leak_detection",false);
-	            settings.setExperimentalOption("prefs",prefs);
-	            driver =new ChromeDriver(settings);
-	        }
-
-	        driver.manage().window().maximize();
-	        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-	        driver.get(url);
-
-	        // POM OBJECT CREATION
-	        lp = new Day11_Loginpage(driver);
-	        rp = new Day11_Recuitementpage(driver);
-	        vp = new Day11_Vancancypage(driver);
-
-	        // EXCEL FILE
-	        FileInputStream excel =new FileInputStream("./src/test/resources/DDT/Day6_testcase.xlsx");
-	        Workbook wb =WorkbookFactory.create(excel);
-	        Sheet s = wb.getSheet("Sheet2");
-	        vacancyName = s.getRow(1).getCell(0).getStringCellValue();
-	        jobTitle = s.getRow(1).getCell(1).getStringCellValue();
-	        description =s.getRow(1).getCell(2).getStringCellValue();
-	        hiringManager =s.getRow(1).getCell(3).getStringCellValue();
-	        numberOfPositions = String.valueOf((int) s.getRow(1).getCell(4).getNumericCellValue());
-    
-	    }
-
-	    @AfterClass
-	    public void closeBrowser() {
-	        driver.quit();
-	    }
-
-}
+	@AfterMethod
+	public void AM() {
+		Day11_loginpage1 lp = new Day11_loginpage1(driver);
+		// LOGOUT
+	    lp.clickUserDropdown();
+	    lp.clickLogout();
+		System.out.println("Logout");
+	}
 
 //testScript
 package Assessment;
@@ -312,60 +327,6 @@ public class Day11_testcase extends Day11_Base{
 
 
 //testcase2
-
-//POM Login Page
-package Assesmentt;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
-
-
-public class Day11_loginpage1 {
-		WebDriver driver;
-
-		@FindBy(name = "username")
-		private WebElement username;
-
-		@FindBy(name = "password")
-		private WebElement password;
-
-		@FindBy(xpath = "//button[@type='submit']")
-		private WebElement login;
-
-		@FindBy(xpath = "//span[contains(@class,'oxd-userdropdown-tab')]")
-		private WebElement userDropdown;
-
-		@FindBy(xpath = "//a[text()='Logout']")
-		private WebElement logout;
-
-		public Day11_loginpage1(WebDriver driver) {
-			this.driver = driver;
-			PageFactory.initElements(driver, this);
-		}
-
-		public void enterUsername(String un) {
-			username.sendKeys(un);
-		}
-
-		public void enterPassword(String pwd) {
-			password.sendKeys(pwd);
-		}
-
-		public void clickLogin() {
-			login.click();
-		}
-
-		public void clickUserDropdown() {
-			userDropdown.click();
-		}
-
-		public void clickLogout() {
-			logout.click();
-		}
-
-}
-
 
 //POM My Info File
 package Assesmentt;
@@ -455,73 +416,6 @@ public class MyInfoPage {
 		return employeeId.getAttribute("value");
 	}
 }
-
-//Base file
-package Assesmentt;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-
-public class Day11_Base1 {
-	
-		protected WebDriver driver;
-		protected Properties p;
-		protected Day11_loginpage1 lp;
-		protected MyInfoPage mp;
-		protected String firstName;
-		protected String lastName;
-		protected String employeeId;
-
-		@BeforeClass
-		public void setup() throws IOException {
-			// PROPERTY FILE
-			FileInputStream f = new FileInputStream("./src/test/resources/DDT/Day6_testcase1.properties");
-			p = new Properties();
-			p.load(f);
-			String browser = p.getProperty("browser");
-			String url = p.getProperty("url");
-			if (browser.equalsIgnoreCase("chrome")) {
-				ChromeOptions settings = new ChromeOptions();
-				Map<String, Object> prefs = new HashMap<>();
-				prefs.put("profile.password_manager_leak_detection", false);
-				settings.setExperimentalOption("prefs", prefs);
-				driver = new ChromeDriver(settings);
-			}
-			driver.manage().window().maximize();
-			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-			driver.get(url);
-
-			// POM OBJECTS
-			lp = new Day11_loginpage1(driver);
-			mp = new MyInfoPage(driver);
-
-			// EXCEL FILE
-			FileInputStream excel = new FileInputStream("./src/test/resources/DDT/Day6_testcase.xlsx");
-			Workbook wb = WorkbookFactory.create(excel);
-			firstName = wb.getSheet("Sheet1").getRow(1).getCell(0).getStringCellValue();
-			lastName = wb.getSheet("Sheet1").getRow(1).getCell(2).getStringCellValue();
-			employeeId = wb.getSheet("Sheet1").getRow(1).getCell(3).getStringCellValue();
-
-		}
-
-		@AfterClass
-		public void closeBrowser() {
-			driver.quit();
-		}
-
-}
-
 
 //TestScript
 package Assessment;
